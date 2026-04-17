@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EcoTrack - Food Waste Monitoring</title>
+<link rel="stylesheet" href="styles.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>🌱 <span>EcoTrack</span></h1>
+      <p>Food Waste Intelligence</p>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span><span>Dashboard</span></div>
+      <div class="nav-item" data-page="log"><span class="icon">➕</span><span>Log Waste</span></div>
+      <div class="nav-item" data-page="inventory"><span class="icon">🥗</span><span>Inventory</span></div>
+      <div class="nav-item" data-page="predictions"><span class="icon">🤖</span><span>AI Predictions</span></div>
+      <div class="nav-item" data-page="analytics"><span class="icon">📈</span><span>Analytics</span></div>
+      <div class="nav-item" data-page="reports"><span class="icon">📄</span><span>Reports</span></div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page active">
+      <div class="header">
+        <h2>📊 Dashboard</h2>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="loadSampleData()">🎲 Load Sample Data</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ Clear All</button>
+        </div>
+      </div>
+      <div class="stats" id="statsGrid"></div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>📉 Waste Trend (Last 30 Days)</h3>
+          <canvas id="trendChart" height="120"></canvas>
+        </div>
+        <div class="panel">
+          <h3>🥧 By Category</h3>
+          <canvas id="categoryChart" height="150"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>🕒 Recent Waste Entries</h3>
+        <div id="recentEntries"></div>
+      </div>
+    </section>
+
+    <!-- LOG WASTE -->
+    <section id="log" class="page">
+      <div class="header"><h2>➕ Log Food Waste</h2></div>
+      <div class="panel">
+        <form id="wasteForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Food Item *</label>
+              <input type="text" id="itemName" required placeholder="e.g., Tomatoes" />
+            </div>
+            <div class="form-group">
+              <label>Category *</label>
+              <select id="category" required>
+                <option value="">Select...</option>
+                <option>Vegetables</option><option>Fruits</option><option>Dairy</option>
+                <option>Meat</option><option>Bakery</option><option>Grains</option>
+                <option>Prepared Food</option><option>Beverages</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Weight (kg) *</label>
+              <input type="number" id="weight" step="0.01" min="0" required placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Cost ($)</label>
+              <input type="number" id="cost" step="0.01" min="0" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Reason *</label>
+              <select id="reason" required>
+                <option value="">Select...</option>
+                <option>Expired</option><option>Spoiled</option><option>Over-prepared</option>
+                <option>Plate Waste</option><option>Cooking Error</option><option>Storage Issue</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date *</label>
+              <input type="date" id="wasteDate" required />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:16px;">
+            <label>Notes</label>
+            <textarea id="notes" rows="3" placeholder="Additional details..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:16px;">💾 Log Waste</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>📜 All Waste Logs</h3>
+        <div id="wasteLogs"></div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="inventory" class="page">
+      <div class="header">
+        <h2>🥗 Inventory Management</h2>
+        <button class="btn btn-primary" onclick="showInventoryModal()">➕ Add Item</button>
+      </div>
+      <div class="panel">
+        <h3>⚠️ Expiry Alerts</h3>
+        <div id="expiryAlerts"></div>
+      </div>
+      <div class="panel">
+        <h3>📦 Current Inventory</h3>
+        <div id="inventoryList"></div>
+      </div>
+    </section>
+
+    <!-- PREDICTIONS -->
+    <section id="predictions" class="page">
+      <div class="header"><h2>🤖 AI Predictions</h2></div>
+      <div class="panel">
+        <h3>🔮 7-Day Waste Forecast</h3>
+        <canvas id="predictionChart" height="100"></canvas>
+        <div id="predictionSummary" style="margin-top:20px;"></div>
+      </div>
+      <div class="panel">
+        <h3>💡 Smart Recommendations</h3>
+        <div id="recommendations"></div>
+      </div>
+      <div class="panel">
+        <h3>🎯 Category Risk Analysis</h3>
+        <div id="riskAnalysis"></div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="analytics" class="page">
+      <div class="header"><h2>📈 Analytics</h2></div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Top 5 Wasted Items</h3>
+          <canvas id="topItemsChart" height="150"></canvas>
+        </div>
+        <div class="panel">
+          <h3>Reasons Breakdown</h3>
+          <canvas id="reasonsChart" height="150"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="reports" class="page">
+      <div class="header"><h2>📄 Reports & Export</h2></div>
+      <div class="panel">
+        <h3>Generate Report</h3>
+        <p style="color:var(--muted); margin-bottom:16px;">Export your food waste data.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="exportCSV()">📊 Export CSV</button>
+          <button class="btn btn-secondary" onclick="exportJSON()">📁 Export JSON</button>
+          <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+        </div>
+      </div>
+      <div class="panel" id="summaryReport"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Inventory Modal -->
+<div class="modal-overlay" id="invModal">
+  <div class="modal">
+    <h3>Add Inventory Item</h3>
+    <form id="invForm">
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Item Name</label><input type="text" id="invName" required />
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Quantity (kg)</label><input type="number" id="invQty" step="0.01" required />
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Category</label>
+        <select id="invCat" required>
+          <option>Vegetables</option><option>Fruits</option><option>Dairy</option>
+          <option>Meat</option><option>Bakery</option><option>Grains</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>Expiry Date</label><input type="date" id="invExp" required />
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-primary">Add</button>
+        <button type="button" class="btn btn-secondary" onclick="closeInventoryModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
